@@ -8,7 +8,8 @@ from optparse import OptionParser
 # based on https://applecrazy.github.io/blog/posts/analyzing-browser-hist-using-python/
 
 # parse arguments
-parser = OptionParser()
+usage = "usage: %prog <SQLite file> [options]"
+parser = OptionParser(usage=usage)
 parser.add_option("-f","--firefox", action="store_true", dest="firefox",
                 help="Switch for processing Firefox history file")
 parser.add_option("-c","--chrome", action="store_true", dest="chrome",
@@ -16,7 +17,14 @@ parser.add_option("-c","--chrome", action="store_true", dest="chrome",
                 
 (browser, inputfile) = parser.parse_args()
 
-db = sqlite3.connect(inputfile[0])
+try:
+    inputfile = inputfile[0]
+except IndexError:
+    print("[!] You most likely forgot to give a filename as (SQLite) input")
+    parser.print_help()
+    exit(1)
+
+db = sqlite3.connect(inputfile)
 cursor = db.cursor()
 
 # from http://forensicswiki.org/wiki/Mozilla_Firefox#History
